@@ -50,9 +50,10 @@ Document owners and other authorized role holders maintain document information 
 
 1. **Given** a user owns a document, **When** they edit its title, description, category, or tags, **Then** the updated information is reflected in document lists and search.
 2. **Given** a user is authorized to maintain a document, **When** they replace its file with an accepted file, **Then** the latest file is available under the existing document entry and the replacement result is reported.
-3. **Given** a user requests deletion, **When** the user confirms and has deletion permission, **Then** the document and its file are permanently removed from user-facing document access; otherwise, no deletion occurs.
-4. **Given** an owner shares a document with a user or team, **When** the share is completed, **Then** each intended recipient is notified and can find the document in “Shared with Me”.
-5. **Given** a user lacks ownership, applicable project-management rights, membership in the associated project, an active direct or project-team share, or administrator rights, **When** they try to view, download, preview, change, replace, or delete a document, **Then** access is denied regardless of how they reached the document.
+3. **Given** a file replacement is rejected or cannot be completed, **When** the replacement fails, **Then** the existing file and document entry remain unchanged and available to authorized users.
+4. **Given** a user requests deletion, **When** the user confirms and has deletion permission, **Then** the document and its file are permanently removed from user-facing document access; otherwise, no deletion occurs.
+5. **Given** an owner shares a document with a user or project team, **When** the share is completed, **Then** the intended recipients are notified and can find the document in “Shared with Me”; project-team access also applies to users who later join that project and ends when they leave it.
+6. **Given** a user lacks ownership, applicable project-management or Team Lead maintenance rights, membership in the associated project, an active direct or project-team share, or administrator rights, **When** they try to view, download, preview, change, replace, or delete a document, **Then** access is denied regardless of how they reached the document.
 
 ### User Story 4 - Use documents with projects, tasks, and the dashboard (Priority: P2)
 
@@ -91,7 +92,8 @@ Administrators review document-related activity and generate summaries that help
 - An upload is not stored or accepted if malware is detected or if the required scan cannot complete.
 - Storage or metadata saving fails during upload or replacement; the user receives a failure result, and no incomplete document is presented as usable.
 - A document without a project is treated as a personal document; it is visible only to its owner, users it is explicitly shared with, and administrators.
-- A user loses membership in the project used for a project-team share, or an explicit share is revoked; access that depended only on that membership or share is removed.
+- A user joins a project after a project-team share is created; the user gains access while they remain a member. A user loses membership or an explicit share is revoked; access that depended only on that membership or share is removed.
+- A file replacement is rejected, fails malware scanning, or cannot be saved; the previous file remains available and the document metadata and associations remain unchanged.
 - A search term matches a restricted document; the restricted document must not appear in results or reveal information through result counts or snippets.
 - A user attempts to preview a type other than PDF or JPEG/PNG; the document remains available for download if authorized, but no inline preview is offered.
 - A document is permanently deleted while linked from a task or share; it is no longer accessible from those locations, while the required activity record remains available to administrators.
@@ -113,14 +115,14 @@ Administrators review document-related activity and generate summaries that help
 - **FR-010**: File access MUST be authorized at the time of each view, preview, download, change, replacement, and deletion. Hiding a control or filtering a list MUST NOT be the only access check.
 - **FR-011**: Employees MUST be able to upload personal documents and documents for projects to which they are assigned.
 - **FR-012**: Project members MUST be able to view and download the documents associated with their projects. Project Managers MUST be able to upload and manage documents in projects they manage.
-- **FR-013**: Team Leads MUST be able to view and manage project documents uploaded by members of projects they also belong to, subject to the explicit deletion permissions in FR-019. For this feature, a “team” is the set of users assigned to the same project; department membership alone MUST NOT grant team access.
+- **FR-013**: Team Leads MUST be able to view, edit metadata for, and replace project documents uploaded by other members of projects they also belong to, subject to the explicit deletion permissions in FR-019. For this feature, a “team” is the set of users assigned to the same project; department membership alone MUST NOT grant team access.
 - **FR-014**: Administrators MUST be able to access all documents and administrative activity reports.
 - **FR-015**: Users MUST be able to view all documents they uploaded with title, category, upload date, file size, and project association, and sort by title, upload date, category, or file size.
 - **FR-016**: Users MUST be able to filter authorized documents by category, associated project, and date range.
 - **FR-017**: Users MUST be able to search authorized documents by title, description, tags, uploader name, and associated project. Search MUST NOT reveal documents the user is not authorized to access.
 - **FR-018**: Authorized users MUST be able to download documents; authorized users MUST be able to preview PDFs and images in the browser.
-- **FR-019**: Document owners MUST be able to edit title, description, category, and tags and replace the current file. Owners MUST be able to delete their documents; Project Managers MUST be able to delete documents in projects they manage; Administrators MUST be able to delete any document. Deletion MUST require confirmation and permanently remove the document from ordinary access.
-- **FR-020**: Document owners MUST be able to share documents with specific users or with all current members of a selected project associated with the document, and revoke those shares. Project-team shares MUST grant access only while recipients remain members of that project. Recipients MUST receive an in-app notification and MUST be able to find currently shared documents in “Shared with Me”.
+- **FR-019**: Document owners MUST be able to edit title, description, category, and tags and replace the current file. Project Managers MUST be able to edit metadata and replace files for documents in projects they manage. Team Leads MUST have the metadata-edit and replacement permissions described in FR-013. Owners MUST be able to delete their documents; Project Managers MUST be able to delete documents in projects they manage; Administrators MUST be able to delete any document. Deletion MUST require confirmation and permanently remove the document from ordinary access. If a replacement is rejected or fails, the existing file and document entry MUST remain unchanged and available.
+- **FR-020**: Document owners MUST be able to share documents with specific users or with all members of a selected project associated with the document, and revoke those shares. Project-team shares MUST apply to current and future members of that project and MUST grant access only while recipients remain members of it. A direct user share remains independent of project membership until revoked. Recipients MUST receive an in-app notification and MUST be able to find currently shared documents in “Shared with Me”.
 - **FR-021**: A task detail view MUST show related documents and allow a user with task access to upload a related document from that view. A document uploaded from a task MUST be associated with the task's project.
 - **FR-022**: The dashboard MUST show the user's five most recently uploaded documents and include a document count in its summary cards.
 - **FR-023**: Users MUST receive an in-app notification when a document is shared with them and when a new document is added to one of their projects.
@@ -134,7 +136,7 @@ Administrators review document-related activity and generate summaries that help
 ### Key Entities *(include if feature involves data)*
 
 - **Document**: A work file and its title, description, category, tags, project/task associations, file type and size, owner/uploader, upload time, and availability status.
-- **Document Share**: A grant of document access to a specified user or team, including its current active or revoked state.
+- **Document Share**: A grant of document access to a specified user or project team, including its current active or revoked state; project-team membership is dynamic.
 - **Document Activity**: A record of an upload, download, deletion, or sharing action, the document involved, the acting user, and when it occurred.
 - **Project and Task Association**: The project or task context connecting a document to existing work and determining applicable project access.
 - **User and Project-Team Access**: The existing user, role, project membership, ownership, and direct-share relationships used to determine document permissions; a project team consists of users assigned to the same project.
@@ -158,7 +160,8 @@ Administrators review document-related activity and generate summaries that help
 - Local disk storage is available in the training environment. An offline-compatible malware-scanning capability is available; the implementation plan must validate how that capability is supplied without an external runtime dependency.
 - Existing project memberships determine both project access and project-team membership. Team Lead visibility and project-team sharing are limited to a shared project membership; department membership alone does not grant access, and no separate team-membership relationship is introduced.
 - Team Leads may manage team members' document metadata and replacement, but deletion follows the narrower owner, Project Manager, and Administrator permissions stated in FR-019.
-- A direct share grants access to the selected recipient while that share is active. Removing membership in the project used for a project-team share, or revoking a direct share, removes access that relied on that relationship.
+- A direct share grants access to the selected recipient while that share is active, independently of project membership. A project-team share includes users who join the project while it is active; leaving the project removes access provided by that project-team share.
+- Failed or rejected file replacements preserve the previously accepted file and document entry.
 - Replacing a file updates the current document; document version history and rollback are not included.
 - Performance goals assume typical local or network operating conditions and no more than 500 documents in the personal list scenario.
 - Azure or other cloud storage migration is a future design consideration, not part of this offline feature's user-visible scope.

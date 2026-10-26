@@ -31,6 +31,9 @@
 
 ## Notes
 
-- Team Lead access and project-team sharing use existing project membership; department membership alone does not grant team access.
+- Team Lead metadata edits and replacements apply to other members' documents in shared projects; deletion permissions remain explicit in FR-019.
+- Project Managers may edit metadata and replace files in projects they manage; their deletion permission is stated separately in FR-019.
+- Project-team shares follow current project membership dynamically, including later joiners and excluding former members; direct user shares are independent.
+- Failed or rejected file replacement preserves the previously accepted file and document entry.
 - The offline/local-storage constraint is retained because it is an explicit feature and project constraint; framework, API, database-schema, and code-structure decisions are left to planning.
 - The offline-compatible malware-scanning capability is an explicit planning dependency; the specification assumes such a capability is available and requires uploads to fail closed if scanning is unavailable.
